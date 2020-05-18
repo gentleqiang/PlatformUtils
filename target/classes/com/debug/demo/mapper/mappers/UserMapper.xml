@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mappers namespace = "com.debug.demo.mapper.userMapper" >
+     <insert id="addUser" parameterType="User">
+         insert into db_user(username,password) values(#{username},#{password})
+     </insert>
+     
+     <delete id= "deleteById" parameterType="string">
+         delete from db_user where user_id = #{userId}
+     </delete>
+     
+     <update id= "updateUserById" parameterType="User">
+         udpate db_user 
+         set username = #{username},
+         password = #{password}
+         where user_id = #{user_id}
+     </update>
+     
+     <select id = "queryAll" resultType="list">
+         select * from db_user
+     </select>
+     
+     <!-- 复杂的动态查询语句 -->
+     <!-- if+where实现多条件查询 -->
+     <select id = "showUser" parameterType="string">
+         select * from db_user
+         <where>
+             <if test="username != null and username != ''">
+                 username = #{username}
+             </if>
+             <if test="password != null and password !=''" >
+                 password = #{password}
+             </if>
+         </where>
+     </select>
+     
+     <!-- if+trim+foreach实现多条件查询 -->
+     <select id = "getUserList" parameterType="list">
+           select * from db_user
+           <!-- prefix:前缀，在trim包含的内容上加上前缀，例如where，prefixOverrides:
+                        对于trim包含内容的首部进行制定内容，例如 and | or的忽略，去余 -->
+           <trim prefix="where" prefixOverrides="and | or">
+                <if test="userIdsList != null">
+                    user_id in
+                    <!-- item:表示集合中每个元素进行迭代时的别名；open:表示该语句以什么开始（既然是in语句，必定从（开始，
+                    separator:表示迭代时以什么符号作为分隔符；close:语句以什么结束，index:制定一个名称，表示在迭代的过程中
+                                          每次都迭代到的位置；collection：做关键，该属性必须制定，不同情况下，该属性值不同，主要有三种，若传入的参数
+                                          是单参数切类型为一个List的时候，属性值为list；若传入的参数是单参数且类型为一个数组的时候，属性值为array，若
+                                          传入的为多参数是，需要封装一个map集合进行处理，属性值为map的key。  -->
+                    <foreach collection="userIdsList" item="user_id" open="(" close=")" separator=",">
+                       #{user_id}
+                    </foreach>
+                </if>
+           </trim>
+     </select>
+     
+     <select id = "updateUser" parameterType="Integer">
+           update db_user
+           <!-- suffix:后缀，在trim包含的内容上加上后缀；suffixOverrides:对于trim
+                       包含内容的首位部进行制定内容的忽略 -->
+           <trim prefix="set" suffix="user_id = #{user_id}" suffixOverrides=",">
+              <if test="username != null">
+                  username = #{username},
+              </if>
+              <if test="password != null">
+                  password = #{password},
+              </if>
+           </trim>
+     </select>
+     
+     <!-- when 和 otherwise 
+     when:当test属性中的条件满足时，就会输出when元素中的内容，并且当when中一旦有条件
+          满足时，就会跳出choose，所以只有一个条件被输出，otherwise元素：当when中的所有条件都不
+          满足，就会输出此元素的内容。-->
+     <select id="QueryAllByChoose" resultType="SMS_provider">
+        select * from db_user where 1 = 1
+         <choose>
+               <when test="proCode != null and proCode != ''">
+                    and proCode like CONCAT('%',#{proCode},'%')
+               </when>
+               <when test="proName != null and proName != ''">
+                    and proName like CONCAT('%',#{proName},'%')
+               </when>
+               <when test="proContact != null and proContact != ''">
+                    and proContact like CONCAT('%',#{proContact},'%')
+               </when>
+               <otherwise>
+                    and YEAR(creationDate) = 2016
+              </otherwise>
+         </choose>           
+     </select>
+</mappers>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

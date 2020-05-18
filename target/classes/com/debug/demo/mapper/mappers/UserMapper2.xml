@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mappers namespace = "com.debug.demo.mapper.userMapper" >
+    <select id = "queryUserById" parameterType="string" resultType="User">
+    <!-- 在使用if语句做动态条件处理的时候如果所有的条件都不满足，得到的sql语句就是
+    select ID，username，password from db_uses where 再这种情况下，我们一般会加
+         一个 1 =1 来匹配语法规则   -->
+         select id, username, password from db_user
+         where 1 = 1 
+         <if test="username!= null">
+              and username = #{username}
+         </if>
+         <!--  <where>标签会自动维护，如果没有条件就不会加 where-->
+         select id, username, password from db_user
+         <where>
+             <if test="username!= null">
+                 and username = #{username} 
+             </if>
+         </where>
+    </select>
+    
+    <!-- foreach用来遍历，遍历的对象是数组，也可以是集合；如果不指定@param 默认值array
+    select * from db_user where id in (?,?,?,?,?) -->
+    <select id = "queryUserById" resultType="User">
+        select * from db_user where id in
+        <foreach collection="ids" item="id" open = "(" separator="," close=")">
+             #{id}
+        </foreach>
+    </select>
+    
+    <!-- insert into db_user (username,password) value(?,?),(?,?),(?,?),(?,?) -->
+    <insert id = "addUser" parameterMap="User">
+        insert into db_user(username,password) values
+        <foreach collection="users" item="user" separator=",">
+            (#{user.username},#{user.pasword})
+        </foreach>
+    </insert>
+    
+    <!-- bind 元素可以从OGNL表达式中创建一个变量并将其绑定到上下文 
+    select * from db_user where user_id = 222-->
+    <select id="queryAll" resultType="user">
+       <bind name="aaa" value="222"/>
+       select * from db_user where user_id = ${aaa}
+    </select>
+    
+    <!-- sql片段一般用来定义sql中的列 -->
+</mappers>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
