@@ -1,4 +1,4 @@
-package com.debug.deomo.utils;
+package com.debug.demo.utils;
 /**
 * 类说明
 * @author gentleman_qiang
