@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+"http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<!-- namespace指向交互的DAO层 -->
+<sqlMap namespace="UserMapper">
+
+      <!--实体的别名 type指向实体类 -->
+      <typeAlias alias="Users" type="com.debug.demo.entity.User"></typeAlias>
+      
+      <!-- resultMap是对一个javabean的映射，需要先定义xml,才可以引用
+                      其中property映射的是实体类中的字段，而column是数据库中的字段 -->
+      <resultMap id="Users-Result" class="User">
+           <result property="userId" column="user_id" jdbcType="INT"></result>
+           <result property="userName" column="username" jdbcType="VARCHAR"></result>
+           <result property="passWord" column="password" jdbcType="VARCHAR"></result>
+      </resultMap>
+      
+      <!-- 所有的列 -->
+      <sql id="allColumn">
+          user_id,username,password
+      </sql>
+      
+      <!-- 插入的列 -->
+      <sql id="insertColumn">
+          username,password
+      </sql>
+      
+      <!-- 查询条件  ①：prepend是添加在动态语句的前面 ②：dynamic中首个prepend被忽略 
+      ③：明白②可以理解拼接语句中遇到的一些问题 例如；update db_user set ,username = username ,
+      pasword = password where userid = userid (×) 但是加入到dynamic标签当中，则会有update
+      db_user set username = username,password = password where userid = userid (√) -->
+      <sql id = "whereUser">
+          <isNotEmpty prepend=" AND " property="userId"> user_id = #userId# </isNotEmpty>
+          <isNotEmpty prepend=" AND " property="userName"> username = #userName# </isNotEmpty>
+          <isNotEmpty prepend=" AND " property="passWord"> password = #passWord# </isNotEmpty>
+      </sql>
+      <sql id = "updateUser">
+          <isNotEmpty prepend=" , " property="userName"> username = #userName# </isNotEmpty>
+          <isNotEmpty prepend=" , " property="passWord"> password = #passWord# </isNotEmpty>
+      </sql>
+      
+      <!-- 插入数据 -->
+      <insert id="addUser" parameterClass="User">
+           insert into db_user(<include refid="insertColumn"/>) values(#userId#,#userName#,#passWord#)
+      </insert>
+      
+      <!-- 修改数据 -->
+      <update id="update" parameterClass="User">
+          update db_user 
+          <dynamic prepend="set">
+                   <include refid="updateUser"/>
+          </dynamic>
+          <!-- userid为int类型，而status为String类型 -->
+          <isNotEmpty property="user_id"> where user_Id=#userId#     </isNotEmpty>
+          <isNotEmpty property="status">  where status in ($status$) </isNotEmpty>           
+      </update>
+      
+      <!-- 根据id查询详情  -->
+      <select id="getUserList">
+         select <include refid="allColumn"/> from db_user
+         <dynamic prepend="where">
+                <include refid="whereUser"/>
+         </dynamic>
+      </select>
+      
+      <!-- 删除记录 -->
+      <delete id="deleteUserByUser">
+           delete from db_user
+           <dynamic prepend="where">
+                 userId = #userid#
+           </dynamic>
+      </delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</sqlMap>

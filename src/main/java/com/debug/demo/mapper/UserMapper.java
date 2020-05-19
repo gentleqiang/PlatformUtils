@@ -21,6 +21,8 @@ public interface UserMapper {
    
    List<User> queryAll();
    
+   User selectUserById(Long userId);
+   
    //开始复杂的动态查询
    List<User> showUser(String username,String password);
    
