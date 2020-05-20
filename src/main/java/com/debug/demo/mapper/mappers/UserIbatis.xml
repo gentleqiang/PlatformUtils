@@ -70,6 +70,4 @@
                  userId = #userid#
            </dynamic>
       </delete>
-      
-      <insert id="addStudent" parameterClass=""></insert>
 </sqlMap>
