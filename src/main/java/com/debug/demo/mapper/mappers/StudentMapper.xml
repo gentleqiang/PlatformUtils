@@ -3,6 +3,38 @@
 "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <!-- namespace指向交互的DAO层 -->
 <sqlMap namespace="StudentMapper">
+
+      <!-- 标签详解 -->
+      
+      <!-- 一级标签；<sqlMap></sqlMap> 用于指定命名空间，在程序段可以还是使用命名空间，标签id
+             的形式来调用相应的sql语句 -->
+             
+      <!-- <include></include>：用于引用包含一段已经定义好的sql，属性：refid:被引用的sql的id-->
+      <!-- <isEmpty></isEmpty>: 判断所传入参数是否为null或者为空，如果是empty，那么就将传入参数
+            拼接sql语句：属性：prepend:拼接sql的前缀，property:对应于java的属性，close和open：包括拼接的sql -->
+            
+      <!-- <isNotEmpty></isNotEmpty>：与isempty相反，判断传入参数是否不为空也不为null，如果不为null和空
+            那么就将参数拼接到sql中，属性同上-->
+            
+      <!-- <iterator></iterator>:用与循环输出，以便循环的生成sql；属性：property：对于要输出的集合；
+      open和close用与开始结束，包括一段拼接的sql，prepend:拼接sql的前缀，conjunction:循环输出拼接时需要的
+            连接字符串，用与定义and 或or ,参数list传入了3个id，非别为：1,3,4，必须写[]，以防解析器简单的讲list输出成
+      string，拼接成的sql为：select * from student where id in (1,3,4)-->
+      <select id="selectStudengList" parameterClass="java.util.HashMap" resultMap="Studeng">
+            select * from student
+            <dynamic prepend="where id in">
+                  <iterate open="(" close=")" conjunction=",">
+                      #[]#
+                  </iterate>
+            </dynamic>
+      </select>
+      
+      <!-- 下面是一些标签的用法区别和技巧 -->
+      <!-- ①：<isNotEmpty>和<isNotNull>的区别：如果不传入参数，isNotEmpty不会将其中的字符串拼入sql
+             而isnotnull会将其中的字符串拼入sql，但是不赋值，一个是不拼入，一个是不赋值，拼入；②：在动态拼接
+      sql时，常常会遇到#和￥，他们的区别是：（1）#是将参数按照字符串传入，$是将参数直接传入（2）#相当于
+            参数变量替换，$相当于是字符串的拼接，（3）#可以防止sql注入，#不可以 ③：在配置sql时，可以直接写
+      select * from table ,但是一定要配置一个包含数据库表全部列的resultMap， -->
       
        <!-- 通过typeAlias是我们在下面使用Student实体类的时候不用写包名  -->
      <typeAlias alias = "Student" type="com.debug.demo.entity.Student"></typeAlias>
@@ -91,6 +123,7 @@
            select <include refid="allColumn"/> from db_user
            <isNotNull> where name like '%#name#%'</isNotNull>
       </select>
+      
 </sqlMap>
 
 
