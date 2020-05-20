@@ -30,7 +30,7 @@ public class UserController {
    @RequestMapping("/getAll")
    public void getUserList(@RequestParam Long userId){
 	   List<User> queryAll = userMapper.queryAll();
-	   List<String> collect = queryAll.stream().map(User::getUsername).collect(Collectors.toList());
+	   List<Object> collect = queryAll.stream().map(User::getUsername).collect(Collectors.toList());
 	   collect.stream().forEach(t -> System.out.println(t));
 	   User userById = userMapper.selectUserById(userId);
 	   User user = new User();

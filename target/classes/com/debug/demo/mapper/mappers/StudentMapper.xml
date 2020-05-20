@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+"http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<!-- namespace指向交互的DAO层 -->
+<sqlMap namespace="StudentMapper">
+      
+       <!-- 通过typeAlias是我们在下面使用Student实体类的时候不用写包名  -->
+     <typeAlias alias = "Student" type="com.debug.demo.entity.Student"></typeAlias>
+     
+     <resultMap id="User-Result" class="Student">
+           <result property="id"    column="id"          jdbcType="INT"></result>
+           <result property="name"  column="name"        jdbcType="VARCHAR"></result>
+           <result property="birth" column="birth"       jdbcType="DATA"></result>
+           <result property="score" column="scoore"      jdbcType="FLOAT"></result>
+      </resultMap>
+      
+      <sql id="whereColumn">
+          <isNotEmpty prepend="," property="name">  name = #name#</isNotEmpty>
+          <isNotEmpty prepend="," property="birth"> birth = #birth#</isNotEmpty>
+          <isNotEmpty prepend="," property="score"> score = #score#</isNotEmpty>
+      </sql>
+      
+      <sql id="allColumn">
+            id,name,birth,score
+      </sql>
+      
+      <sql id="insertColumn">
+            name,birth,score
+      </sql>
+
+      <!-- parameterClass表示参数的内容，#表示这是一个外部调用需要传递的参数，可以理解为占位符  -->
+      <insert id="addStudent" parameterClass="Student">
+          insert into db_user
+          (<include refid="insertColumn"/>) values
+          (#name#,#birth#,#score#)
+      </insert>
+      
+      <delete id="deleteStudentById" parameterClass="int">
+           delete from db_user
+           <dynamic prepend="where">
+                  <isNotNull property="id">id = #id#</isNotNull>
+           </dynamic>
+           
+           delete from db_user
+           <isNotNull property="id"> where id = #id#</isNotNull>
+      </delete>
+      
+      <!-- resultClass表示返回结果的类型  -->
+      <select id="selectAllStudeng" resultClass="Student">
+         select <include refid="allColumn"/> from db_user
+      </select>
+        
+      <!-- 修改学生 --> 
+      <update id="updateStudent" parameterClass="Student">
+          update db_user 
+          <dynamic prepend="set">
+              <include refid="whereColumn"/>
+          </dynamic>
+          <isNotEmpty property="id"> where id = #id#</isNotEmpty>
+      </update> 
+      
+      <!-- 根据姓名查找  -->
+      <select id="seleteStudengByName" parameterClass="string">
+           select <include refid="allColumn"/> from db_user
+           <dynamic prepend="where">
+                 <isNotEmpty property="name"> name = #name#</isNotEmpty>
+           </dynamic>
+      </select>
+      
+      <!-- 根据id查找 -->
+      <select id="seleteStudentById" parameterClass="int" resultClass="Student">
+           select <include refid="allColumn"/> from db_user
+           <isNotEmpty property="id"> where id = #id#</isNotEmpty>
+      </select>
+      
+      <!-- 分页 -->
+      <select id="getStudentPage" parameterClass="jaca.util.HashMap" resultClass="Student">
+            select <include refid="allColumn"/> from db_user
+            <isNotNull property="limitClauseStart">
+                limit #limitClauseStart#,#limitClauseCount#
+            </isNotNull>
+      </select>
+      
+      <!-- 获取总记录条数 -->
+      <select id="select_count" resultClass="int">
+           select count(*) from db_user
+      </select>
+</sqlMap>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
