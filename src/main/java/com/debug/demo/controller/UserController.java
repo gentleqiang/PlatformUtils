@@ -1,7 +1,11 @@
 package com.debug.demo.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
+import javax.swing.text.MaskFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.expression.Maps;
 
 import com.debug.demo.entity.User;
 import com.debug.demo.mapper.UserMapper;
@@ -30,11 +35,15 @@ public class UserController {
    @RequestMapping("/getAll")
    public void getUserList(@RequestParam Long userId){
 	   List<User> queryAll = userMapper.queryAll();
-	   List<Object> collect = queryAll.stream().map(User::getUsername).collect(Collectors.toList());
+	   List<String> collect = queryAll.stream().map(User::getUsername).collect(Collectors.toList());
 	   collect.stream().forEach(t -> System.out.println(t));
 	   User userById = userMapper.selectUserById(userId);
 	   User user = new User();
 	   BeanUtils.copyProperties(userById, user);
 	   queryAll.sort((o1, o2) -> -Integer.compare(o1.getUser_id(),o2.getUser_id()));
+	   HashMap<String, String> map = new HashMap<String,String>();
+	   map.put("1", "JDK");
+	   map.put("2", "GITHUB");
+	   
   }
 }

@@ -20,11 +20,11 @@
       open和close用与开始结束，包括一段拼接的sql，prepend:拼接sql的前缀，conjunction:循环输出拼接时需要的
             连接字符串，用与定义and 或or ,参数list传入了3个id，非别为：1,3,4，必须写[]，以防解析器简单的讲list输出成
       string，拼接成的sql为：select * from student where id in (1,3,4)-->
-      <select id="selectStudengList" parameterClass="java.util.HashMap" resultMap="Studeng">
+      <select id="selectStudengList" parameterClass="java.util.List" resultMap="Studeng">
             select * from student
             <dynamic prepend="where id in">
-                  <iterate open="(" close=")" conjunction=",">
-                      #[]#
+                  <iterate property="idList" open="(" close=")" conjunction=",">
+                      #idList[]#
                   </iterate>
             </dynamic>
       </select>
